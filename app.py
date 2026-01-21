@@ -275,10 +275,12 @@ def render_home():
     
     # CTA Button
     c_btn1, c_btn2, c_btn3 = st.columns([1, 2, 1])
+    
+    def go_to_experience():
+        st.session_state["main_nav"] = "Experience Neuro Vox"
+        
     with c_btn2:
-        if st.button("🚀 Experience Neuro Vox Now", type="primary", use_container_width=True):
-            st.session_state["main_nav"] = "Experience Neuro Vox"
-            st.rerun()
+        st.button("🚀 Experience Neuro Vox Now", type="primary", use_container_width=True, on_click=go_to_experience)
 
     st.markdown("---")
     c1, c2, c3 = st.columns(3)
@@ -690,13 +692,18 @@ with st.sidebar:
     st.image("Logo.png", width=200) 
     st.markdown("### Navigation")
     
+    # Calculate index based on current session state
+    page_keys = list(PAGES.keys())
+    nav_index = 0
+    if "main_nav" in st.session_state and st.session_state["main_nav"] in page_keys:
+        nav_index = page_keys.index(st.session_state["main_nav"])
+
     selection = option_menu(
         menu_title=None,
         options=list(PAGES.keys()),
         icons=["house", "mic", "file-text", "bullseye", "lightbulb", "calendar"],
         menu_icon="cast",
-        default_index=0,
-        key="main_nav",
+        default_index=nav_index,
         styles={
             "container": {"padding": "0!important", "background-color": "#111827"},
             "icon": {"color": "#00f2ff", "font-size": "18px"}, 
@@ -704,6 +711,10 @@ with st.sidebar:
             "nav-link-selected": {"background-color": "#1f2937", "border-left": "3px solid #00f2ff"},
         }
     )
+
+    if selection != st.session_state.get("main_nav", "Home"):
+        st.session_state["main_nav"] = selection
+        st.rerun()
     
     st.markdown("---")
     st.caption("Conrades Fellowship 2026")
